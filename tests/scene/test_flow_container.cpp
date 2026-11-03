@@ -29,6 +29,7 @@
 /**************************************************************************/
 
 #include "tests/test_macros.h"
+#include "tests/test_tools.h"
 
 TEST_FORCE_LINK(test_flow_container)
 
@@ -633,6 +634,44 @@ TEST_CASE("[SceneTree][FlowContainer] VFlowContainer") {
 		memdelete(child_control_1);
 	}
 
+	memdelete(vflow_container);
+}
+
+TEST_CASE("[SceneTree][FlowContainer] Fixed orientation can be duplicated with internal state") {
+	HFlowContainer *hflow_container = memnew(HFlowContainer);
+	{
+		ErrorDetector error_detector;
+		Node *duplicate = hflow_container->duplicate(Node::DUPLICATE_INTERNAL_STATE);
+
+		CHECK_FALSE(error_detector.has_error);
+		CHECK(duplicate != nullptr);
+		if (duplicate) {
+			FlowContainer *flow_duplicate = Object::cast_to<FlowContainer>(duplicate);
+			CHECK(flow_duplicate != nullptr);
+			if (flow_duplicate) {
+				CHECK_FALSE(flow_duplicate->is_vertical());
+			}
+			memdelete(duplicate);
+		}
+	}
+	memdelete(hflow_container);
+
+	VFlowContainer *vflow_container = memnew(VFlowContainer);
+	{
+		ErrorDetector error_detector;
+		Node *duplicate = vflow_container->duplicate(Node::DUPLICATE_INTERNAL_STATE);
+
+		CHECK_FALSE(error_detector.has_error);
+		CHECK(duplicate != nullptr);
+		if (duplicate) {
+			FlowContainer *flow_duplicate = Object::cast_to<FlowContainer>(duplicate);
+			CHECK(flow_duplicate != nullptr);
+			if (flow_duplicate) {
+				CHECK(flow_duplicate->is_vertical());
+			}
+			memdelete(duplicate);
+		}
+	}
 	memdelete(vflow_container);
 }
 
